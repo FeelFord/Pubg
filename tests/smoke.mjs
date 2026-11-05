@@ -31,7 +31,13 @@ test('desktop: navigation, maps, keyboard tabs, stories, trailer, and platform d
     await dialog.waitFor({ state: 'detached' });
     assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), 'PLAY NOW');
 
-    await page.getByRole('button', { name: 'Explore Erangel', exact: true }).click();
+    const erangel = page.getByRole('button', { name: 'Explore Erangel', exact: true });
+    await erangel.hover();
+    await page.waitForTimeout(800);
+    const selectedMapWidth = (await erangel.boundingBox()).width;
+    const otherMapWidth = (await page.getByRole('button', { name: 'Explore Miramar', exact: true }).boundingBox()).width;
+    assert.ok(selectedMapWidth > otherMapWidth + 30, 'Hovered map opens into a larger cinematic frame');
+    await erangel.click();
     await dialog.waitFor();
     assert.match(await dialog.locator('h2').innerText(), /ERANGEL/);
     await dialog.getByRole('button', { name: 'NEXT MAP' }).click();
@@ -44,8 +50,22 @@ test('desktop: navigation, maps, keyboard tabs, stories, trailer, and platform d
     assert.match(await page.getByRole('tabpanel').locator('h3').innerText(), /AKM/);
     await page.keyboard.press('ArrowRight');
     assert.match(await page.getByRole('tabpanel').locator('h3').innerText(), /AWM/);
+    await page.keyboard.press('Home');
+    assert.match(await page.getByRole('tabpanel').locator('h3').innerText(), /M416/);
+    await page.keyboard.press('End');
+    assert.match(await page.getByRole('tabpanel').locator('h3').innerText(), /AWM/);
     await page.getByRole('button', { name: 'Next weapon' }).click();
     assert.match(await page.getByRole('tabpanel').locator('h3').innerText(), /M416/);
+    await page.waitForTimeout(700);
+    const visual = await page.locator('.weapon-image').boundingBox();
+    await page.mouse.move(visual.x + visual.width * .7, visual.y + visual.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(visual.x + visual.width * .3, visual.y + visual.height / 2, { steps: 12 });
+    await page.mouse.up();
+    await page.waitForFunction(() => document.querySelector('.weapon-info h3')?.textContent === 'AKM');
+    const photo = page.getByRole('img', { name: 'AKM assault rifle, full side profile' });
+    await photo.waitFor();
+    await page.waitForFunction(() => document.querySelector('.weapon-image img')?.complete && document.querySelector('.weapon-image img')?.naturalWidth > 0);
 
     await page.locator('.news-card').first().click();
     await dialog.waitFor();
@@ -76,6 +96,8 @@ test('responsive layouts and reduced-motion mobile navigation', async () => {
       await page.waitForTimeout(200);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, `No overflow at ${width}px`);
       assert.equal(await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior), 'auto');
+      assert.equal(await page.locator('.reading-progress').evaluate(element => getComputedStyle(element).display), 'none');
+      assert.equal(await page.locator('.map-photo').first().evaluate(element => getComputedStyle(element).clipPath), 'none');
       if (width < 700) {
         await page.getByRole('button', { name: 'Open navigation' }).click();
         await page.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link', { name: /MAPS/ }).click();

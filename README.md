@@ -41,7 +41,7 @@ Tests automatically use `/usr/bin/chromium` if present. Set `CHROMIUM_PATH` to u
 - Native smooth scrolling, parallax, magnetic buttons, scroll reveals, a desktop cursor, and reduced-motion support.
 - A privacy-enhanced YouTube trailer embed loads only when requested. Playback depends on YouTube connectivity and availability; an official trailers link is provided.
 - News cards contain evergreen editorial introductions, with links to the official news hub rather than invented live announcements.
-- Generated cinematic artwork represents the game's atmosphere; it is not an official game screenshot. AKM and AWM use custom vector illustrations. Weapon bars are explicitly illustrative relative ratings.
+- Generated cinematic artwork represents the game's atmosphere; it is not an official game screenshot. The AKM and AWM now use generated studio-style product images alongside the M416. Weapon bars are explicitly illustrative relative ratings.
 - Independent fan concept, not affiliated with KRAFTON. PUBG trademarks belong to their respective owners. Local fonts include their SIL Open Font License files in `public/fonts`.
 
 ## Publish to GitHub Pages
@@ -57,3 +57,9 @@ This command builds with `/Pubg` as the base path, then publishes the `out/` con
 For the first publication, open the repository's **Settings → Pages**. Set **Source** to **Deploy from a branch**, then select **gh-pages** and **/(root)** and save. The expected address is **https://feelford.github.io/Pubg/** once GitHub completes deployment. Merely pushing a branch does not enable Pages; GitHub's settings must allow it.
 
 To build without publishing, run `npm run build:pages`. All images have the correct project prefix; image optimization is disabled only for static export because GitHub Pages has no image server. The locally optimized WebP hero keeps the exported download small. The normal `npm run build` / `npm start` workflow remains available without a base path.
+
+## Visual refinement after пабг1
+
+The current unpublished refinement adds a separate cinematic squad scene, subtle scroll parallax, a thin reading-progress indicator, masked map reveals and expanding desktop map cards, realistic weapon imagery, and a draggable weapon showcase. Keyboard users can switch weapons with Left/Right and Home/End. Reduced-motion settings disable scene movement, map masking, and the custom cursor. Cursor movement uses isolated motion values, avoiding a render of the full page on every pointer event.
+
+The `pubg1` Git tag and `/workspace/backups/pubg1.zip` remain the original restore point. Visual changes are not deployed by building or running tests. Only the explicit `npm run deploy:pages` command publishes to GitHub Pages.
